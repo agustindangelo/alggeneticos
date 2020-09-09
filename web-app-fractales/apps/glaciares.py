@@ -124,11 +124,49 @@ def update_figure(anio):
     #para mostrar medidas de altura mas realistas (en metros)
     altura_min=altura_min*7 
     altura_max=altura_max*7
-    tamaño_x=45
-    tamaño_y=25
-    Z = generar_terreno(tamaño=(tamaño_x, tamaño_y), altura_min=altura_min, altura_max=altura_max, variabilidad=variabilidad, semilla=0)
-    x = np.linspace(-tamaño_x/2, tamaño_x/2, tamaño_x)
-    y = np.linspace(-tamaño_y/2, tamaño_y/2, tamaño_y)
-    X,Y = np.meshgrid(x,y)
-    fig = go.Figure(data=[go.Surface(z=Z)])
-    return fig 
+    longitud = 40
+
+    Z = generar_terreno(
+            tamaño=(longitud, longitud),
+            altura_min=altura_min,
+            altura_max=altura_max,
+            variabilidad=variabilidad,
+            semilla=0
+        )
+    
+    superficies = [go.Surface(z=Z)] 
+    fila_base = np.full(longitud, altura_min)
+    fila_de_valor_limite = np.full(longitud, longitud-1)
+    fila_lineal = np.linspace(altura_min, longitud-1, longitud)
+
+#   ---------- Pared 1:
+    x = np.array([fila_base, fila_base])
+    y = np.array([fila_lineal, fila_lineal])
+    z = np.array([fila_base, Z[:,0]])
+    
+    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+#   ---------- Pared 2:
+    x = np.array([fila_lineal, fila_lineal])
+    y = np.array([fila_base, fila_base])
+    z = np.array([fila_base, Z[0,:]])   
+
+    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+#   ---------- Pared 3:
+    x = np.array([fila_lineal, fila_lineal])
+    y = np.array([fila_de_valor_limite, fila_de_valor_limite])
+    z = np.array([fila_base, Z[longitud-1,:]])   
+
+    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+#   ---------- Pared 4:
+    x = np.array([fila_de_valor_limite, fila_de_valor_limite])
+    y = np.array([fila_lineal, fila_lineal])
+    z = np.array([fila_base, Z[:, longitud-1]]) 
+
+    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+#   ----------- Piso:
+    x, y = np.meshgrid(fila_lineal, fila_lineal)
+    z = np.full((longitud, longitud), altura_min)
+    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+
+    fig = go.Figure(data = superficies)
+    return fig
