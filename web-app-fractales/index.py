@@ -6,8 +6,22 @@ from app import app
 from apps import home, glaciares, experimentacion
 from dash.dependencies import Input, Output
 
-navbar = dbc.Navbar([
-            html.A(
+dropdown = dbc.DropdownMenu(
+    children=[
+        dbc.DropdownMenuItem("Información General", href="/home", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Modelado de Glaciares", href="/glaciares", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Experimentación", href="/experimentacion", style={'font-size': '24px'}),
+    ],
+    nav = True,
+    in_navbar = True,
+    label = "Secciones",
+    style={'font-size': '24px'}
+)
+
+navbar = dbc.Navbar(
+    dbc.Container(
+        [
+           html.A(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src='https://image.flaticon.com/icons/png/512/82/82990.png', width='70px')),
@@ -18,18 +32,22 @@ navbar = dbc.Navbar([
                 ),
                 href="/home",
             ),
-            dbc.Col([
-                dbc.NavLink("Información General", href="/home", style={'font-size': '20px'}, className='ml-auto'),              
-                dbc.NavLink("Modelado de Glaciares", href="/glaciares", style={'font-size': '20px'}, className='ml-auto'),
-                dbc.NavLink("Experimentación", href="/experimentacion", style={'font-size': '20px'}, className='ml-auto'), 
-                ],
-                width={'size':'4', 'order':'last'}
-            )
-           
-        ],
-        color="primary",
-        dark=True,
-    )
+            dbc.NavbarToggler(id="navbar-toggler2"),
+            dbc.Collapse(
+                dbc.Nav(
+                    # right align dropdown menu with ml-auto className
+                    [dropdown], className="ml-auto", navbar=True
+                ),
+                id="navbar-collapse2",
+                navbar=True,
+            ),
+        ]
+    ),
+    color="primary",
+    dark=True,
+    className="mb-4",
+)
+
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),

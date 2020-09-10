@@ -13,21 +13,22 @@ import pandas as pd
 
 
 layout = html.Div([
-    dbc.Row([
-        dbc.Col(
-            dbc.Card(
-                html.H4(children='Experimentación - Alg. del Diamante Cuadrado',
-                        className="text-center text-light bg-dark"),
-                body=True, color="dark")
-            , className="mb-4"
-        )
-    ]),
+    
     dbc.Container([
         dbc.Row([
             dbc.Col(
+                dbc.Card(
+                    html.H4(children='Experimentación - Alg. del Diamante Cuadrado',
+                            className="text-center text-light bg-dark"),
+                    body=True, color="dark")
+                , className="mb-4"
+            )
+        ]),
+        dbc.Row([
+            dbc.Col(
                 html.Div([
-                    html.H5("Semilla para el generador"),
-                    dbc.Input(placeholder="Semilla...", type="number", value=0, id="input_semilla"),
+                    html.H5("Semilla"),
+                    dbc.Input(type="number", value=0, id="input_semilla"),
                 ],
                 id="styled-numeric-input",
                 ),
