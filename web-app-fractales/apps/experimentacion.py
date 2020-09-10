@@ -1,4 +1,5 @@
 # Esta pagina permite experimentar con los distintos parametros del algoritmo, observando los resultado online
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -12,100 +13,144 @@ import pandas as pd
 
 
 layout = html.Div([
-    dbc.Row(
+    dbc.Row([
         dbc.Col(
-                html.H1("Terrenos Interactivos")
-           )
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Altura Mínima del Terreno"),
-            dcc.Slider(
-                id='slider_altura_min',
-                min=0,
-                max=5,
-                value=3,
-                marks={i: f'{i}' for i in range(0,6)}
+            dbc.Card(
+                html.H4(children='Experimentación - Alg. del Diamante Cuadrado',
+                        className="text-center text-light bg-dark"),
+                body=True, color="dark")
+            , className="mb-4"
+        )
+    ]),
+    dbc.Container([
+        dbc.Row([
+            dbc.Col(
+                html.Div([
+                    html.H5("Semilla para el generador"),
+                    dbc.Input(placeholder="Semilla...", type="number", value=0, id="input_semilla"),
+                ],
+                id="styled-numeric-input",
+                ),
+                width=3
+            ),
+            dbc.Col(
+                html.Div([
+                    html.H5("Longitud del lado"),
+                    dbc.Input(placeholder="Longitud", type="number", min=10, max=100, value=25, id="input_longitud"),
+                ],
+                id="styled-numeric-input",
+                ),
+                width=3
+            ),
+            dbc.Col([
+                html.H5("Altura máxima"),
+                dcc.Slider(
+                    id='slider_altura_max',
+                    min=5,
+                    max=10,
+                    value=7,
+                    marks={i: f'{i}' for i in range(5,11)}
+                )],
+                width=6
+            ),
+        ]),
+        dbc.Row([
+            dbc.Col([
+                html.H5("Variabilidad del Terreno"),
+                dcc.Slider(
+                    id='slider_variabilidad',
+                    min=0,
+                    max=100,
+                    value=50,
+                    marks={i: f'{i/100}' for i in range(0,101,10)}
+                )],
+                width=6    
+            ),
+            dbc.Col([
+                html.H5("Altura mínima"),
+                dcc.Slider(
+                    id='slider_altura_min',
+                    min=0,
+                    max=5,
+                    value=3,
+                    marks={i: f'{i}' for i in range(0,6)}
+                )],
+                width=6
             )
-        ])
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Altura Máxima del Terreno"),
-            dcc.Slider(
-                id='slider_altura_max',
-                min=5,
-                max=10,
-                value=7,
-                marks={i: f'{i}' for i in range(5,11)}
+        ]),
+        dbc.Row(
+            dbc.Col(
+                dcc.Graph(id='graph_experimentacion'),
+                width={'size': 10, 'offset':1}
             )
-        ])
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Variabilidad del Terreno"),
-            dcc.Slider(
-                id='slider_variabilidad',
-                min=0,
-                max=100,
-                value=50,
-                marks={i: f'{i/100}' for i in range(0,101,10)}
-            )
-        ])
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Longitud del Lado 1"),
-            dcc.Slider(
-                id='slider_tamaño_x',
-                min=1,
-                max=25,
-                value=5,
-                marks={i: f'{i}' for i in range(1, 26, 2)}
-            )
-        ])
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Longitud del Lado 2"),
-            dcc.Slider(
-                id='slider_tamaño_y',
-                min=1,
-                max=25,
-                value=5,
-                marks={i: f'{i}' for i in range(1, 26, 2)}
-            )
-        ])
-    ),    
-    dbc.Row(
-        dbc.Col([
-            dcc.Graph(id='graph_experimentacion')
-        ])
-    )]
-)
+        )
+    ])  
+])
 # Define callback to update graph
 @app.callback(
     Output('graph_experimentacion', 'figure'),
-    [Input('slider_altura_min', 'value'),
-     Input('slider_altura_max', 'value'),
+    [Input('input_semilla', 'value'),
+     Input('input_longitud', 'value'),
      Input('slider_variabilidad', 'value'),
-     Input('slider_tamaño_x', 'value'),
-     Input('slider_tamaño_y', 'value')]
+     Input('slider_altura_min', 'value'),
+     Input('slider_altura_max', 'value')]
 )
 
-def update_figure(altura_min, altura_max, variabilidad, tamaño_x, tamaño_y):
+def update_figure(semilla, longitud, variabilidad, altura_min, altura_max):
     Z = generar_terreno(
-            tamaño=(tamaño_x, tamaño_y),
+            tamaño=(longitud, longitud),
             altura_min=altura_min,
             altura_max=altura_max,
             variabilidad=variabilidad/100,
-            semilla=0
+            semilla=semilla
         )
 
-    x = np.linspace(-tamaño_x/2, tamaño_x/2, tamaño_x)
-    y = np.linspace(-tamaño_y/2, tamaño_y/2, tamaño_y)
+    z_minimo = np.min(Z)
+    z_maximo= np.max(Z)
 
-    X,Y = np.meshgrid(x,y)
+    fila_de_ceros = np.full(longitud, 0)
+    fila_z_minimo = np.full(longitud, z_minimo)
+    fila_de_valor_limite = np.full(longitud, longitud-1)
+    fila_lineal = np.linspace(0, longitud-1, longitud)
+
+    superficies = [go.Surface(z=Z, colorscale='blues', reversescale=True, showscale=False)] 
     
-    fig = go.Figure(data=[go.Surface(z=Z, colorscale='Blues', reversescale=True)])
+#   ---------- Pared 1:
+    x = np.array([fila_de_ceros, fila_de_ceros])
+    y = np.array([fila_lineal, fila_lineal])
+    z = np.array([fila_z_minimo, Z[:,0]])
+    
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
+#   ---------- Pared 2:
+    x = np.array([fila_lineal, fila_lineal])
+    y = np.array([fila_de_ceros, fila_de_ceros])
+    z = np.array([fila_z_minimo, Z[0,:]])   
+
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
+#   ---------- Pared 3:
+    x = np.array([fila_lineal, fila_lineal])
+    y = np.array([fila_de_valor_limite, fila_de_valor_limite])
+    z = np.array([fila_z_minimo, Z[longitud-1,:]])   
+
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
+#   ---------- Pared 4:
+    x = np.array([fila_de_valor_limite, fila_de_valor_limite])
+    y = np.array([fila_lineal, fila_lineal])
+    z = np.array([fila_z_minimo, Z[:, longitud-1]]) 
+
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
+#   ----------- Piso:
+    x, y = np.meshgrid(fila_lineal, fila_lineal)
+    z = np.full((longitud, longitud), z_minimo)
+    
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale='blues', showscale=False))
+    
+    fig = go.Figure(data = superficies)
+
+    fig.update_layout(
+                    width=1000,
+                    height=700,
+                    margin=dict(t=0, r=100, l=100, b=0)
+                )
+
     return fig

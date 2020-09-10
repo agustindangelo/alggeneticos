@@ -1,4 +1,5 @@
 # Esta pagina es para modelar el derretimiento de glaciares
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -12,39 +13,65 @@ import pandas as pd
 
 
 layout = html.Div([
-    dbc.Row(
+    dbc.Row([
         dbc.Col(
-                html.H1("MODELADO DEL DERRETIMIENTO DE GLACIARES")
-           )
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Año: "),
-            dcc.Slider(
-                id='slider_anio',
-                min=1950,
-                max=2090,
-                value=2020,
-                step=None,
-                marks={i: f'{i}' for i in range(1950, 2091, 10)}
+            dbc.Card(
+                html.H4(children='Modelado de Glaciares Mediante el Alg. del Diamante Cuadrado',
+                        className="text-center text-light bg-dark"),
+                body=True, color="dark")
+            , className="mb-4")
+    ]),
+    dbc.Container([
+        dbc.Row([
+            dbc.Col(
+                html.Div([
+                    html.H5("Semilla para el generador"),
+                    dbc.Input(placeholder="Semilla...", type="number", value=0, id="input_semilla"),
+                ],
+                id="styled-numeric-input",
+                ),
+                width=3
+            ),
+            dbc.Col(
+                html.Div([
+                    html.H5("Longitud del lado"),
+                    dbc.Input(placeholder="Longitud", type="number", min=10, max=100, value=25, id="input_longitud"),
+                ],
+                id="styled-numeric-input",
+                ),
+                width=3
+            ),
+            
+            dbc.Col([
+                html.H4("Año"),
+                dcc.Slider(
+                    id='slider_anio',
+                    min=1950,
+                    max=2090,
+                    value=2020,
+                    step=None,
+                    marks={i: f'{i}' for i in range(1950, 2091, 10)}
+                )
+            ], width=6
             )
-        ])
-    ),
-    dbc.Row(
-        dbc.Col([
-            html.H3("Glaciar resultante: "),
-            dcc.Graph(id='graph_glaciares')
-        ])
-    )
-]
-)
+        ]),
+        dbc.Row(
+            dbc.Col(
+                dcc.Graph(id='graph_glaciares'),
+                width={'size': 10, 'offset': 1}
+            )
+        )
+    ])
+])
 # Define callback to update graph
 @app.callback(
     Output('graph_glaciares', 'figure'),
-    Input('slider_anio', 'value')
+    [Input('slider_anio', 'value'),
+     Input('input_semilla', 'value'),
+     Input('input_longitud', 'value')]
 )
 
-def update_figure(anio):
+def update_figure(anio, semilla, longitud):
     if (anio==1950):
         altura_min=9
         altura_max=10
@@ -124,49 +151,65 @@ def update_figure(anio):
     #para mostrar medidas de altura mas realistas (en metros)
     altura_min=altura_min*7 
     altura_max=altura_max*7
-    longitud = 40
 
     Z = generar_terreno(
             tamaño=(longitud, longitud),
             altura_min=altura_min,
             altura_max=altura_max,
             variabilidad=variabilidad,
-            semilla=0
+            semilla=semilla
         )
     
-    superficies = [go.Surface(z=Z)] 
-    fila_base = np.full(longitud, altura_min)
-    fila_de_valor_limite = np.full(longitud, longitud-1)
-    fila_lineal = np.linspace(altura_min, longitud-1, longitud)
+    z_minimo = np.min(Z)
+    z_maximo= np.max(Z)
 
-#   ---------- Pared 1:
-    x = np.array([fila_base, fila_base])
-    y = np.array([fila_lineal, fila_lineal])
-    z = np.array([fila_base, Z[:,0]])
+    fila_de_ceros = np.full(longitud, 0)
+    fila_z_minimo = np.full(longitud, z_minimo)
+    fila_de_valor_limite = np.full(longitud, longitud-1)
+    fila_lineal = np.linspace(0, longitud-1, longitud)
+
+    superficies = [go.Surface(z=Z, colorscale='blues', reversescale=True, showscale=False)] 
     
-    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+#   ---------- Pared 1:
+    x = np.array([fila_de_ceros, fila_de_ceros])
+    y = np.array([fila_lineal, fila_lineal])
+    z = np.array([fila_z_minimo, Z[:,0]])
+    
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 2:
     x = np.array([fila_lineal, fila_lineal])
-    y = np.array([fila_base, fila_base])
-    z = np.array([fila_base, Z[0,:]])   
+    y = np.array([fila_de_ceros, fila_de_ceros])
+    z = np.array([fila_z_minimo, Z[0,:]])   
 
-    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 3:
     x = np.array([fila_lineal, fila_lineal])
     y = np.array([fila_de_valor_limite, fila_de_valor_limite])
-    z = np.array([fila_base, Z[longitud-1,:]])   
+    z = np.array([fila_z_minimo, Z[longitud-1,:]])   
 
-    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 4:
     x = np.array([fila_de_valor_limite, fila_de_valor_limite])
     y = np.array([fila_lineal, fila_lineal])
-    z = np.array([fila_base, Z[:, longitud-1]]) 
+    z = np.array([fila_z_minimo, Z[:, longitud-1]]) 
 
-    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ----------- Piso:
     x, y = np.meshgrid(fila_lineal, fila_lineal)
-    z = np.full((longitud, longitud), altura_min)
-    superficies.append(go.Surface(x=x, y=y, z=z, opacity = 0.9))
+    z = np.full((longitud, longitud), z_minimo)
+    
+    superficies.append(go.Surface(x = x, y = y, z = z, colorscale='blues', showscale=False))
 
     fig = go.Figure(data = superficies)
+
+    fig.update_layout(scene = dict(
+                        xaxis = dict(ticks='',visible=False),
+                        yaxis = dict(ticks='',visible=False),
+                        zaxis = dict(ticks='',visible=False),
+                    ),
+                    width=1000,
+                    height=700,
+                    margin=dict(t=0, r=100, l=100, b=0)
+                )
+
     return fig
