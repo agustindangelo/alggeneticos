@@ -3,13 +3,14 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 
 from app import app
-from apps import home, glaciares, experimentacion
+from apps import home, glaciares, experimentacion, retrocesos
 from dash.dependencies import Input, Output
 
 dropdown = dbc.DropdownMenu(
     children=[
         dbc.DropdownMenuItem("Información General", href="/home", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Modelado de Glaciares", href="/glaciares", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Modelado de Retrocesos del Glaciar", href="/retrocesos", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Experimentación", href="/experimentacion", style={'font-size': '24px'}),
     ],
     nav = True,
@@ -19,8 +20,7 @@ dropdown = dbc.DropdownMenu(
 )
 
 navbar = dbc.Navbar(
-    dbc.Container(
-        [
+    dbc.Container([
            html.A(
                 dbc.Row(
                     [
@@ -65,6 +65,8 @@ def display_page(pathname):
         return glaciares.layout
     elif pathname == '/experimentacion':
         return experimentacion.layout
+    elif pathname == '/retrocesos':
+        return retrocesos.layout
     else:
         return home.layout
 

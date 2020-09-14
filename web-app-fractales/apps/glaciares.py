@@ -155,16 +155,16 @@ def update_figure(anio, semilla, longitud):
     fig = go.Figure(data = superficies)
 
     fig.update_layout(
-                    title=f'Año {anio}, temperatura promedio: {temp}',
-                    titlefont={'size':30},
-                    scene = dict(
-                        xaxis = dict(ticks='',visible=False),
-                        yaxis = dict(ticks='',visible=False),
-                        zaxis = dict(ticks='',visible=False),
-                    ),
-                    width=1000,
-                    height=700,
-                    margin=dict(t=50, r=100, l=100, b=0)
-                )
+        title=f'Año {anio}, temperatura promedio: {temp}',
+        titlefont={'size':30},
+        scene = dict(
+            xaxis = dict(ticks='',visible=False),
+            yaxis = dict(ticks='',visible=False),
+            zaxis = dict(ticks='',visible=False),
+        ),
+        width=1000,
+        height=700,
+        margin=dict(t=50, r=100, l=100, b=0)
+    )
 
     return fig
