@@ -30,7 +30,7 @@ layout = html.Div([
                 ],
                 id="styled-numeric-input",
                 ),
-                width=3
+                width=2
             ),
             dbc.Col([
                 html.H4("Tiempo"),
@@ -41,15 +41,31 @@ layout = html.Div([
                     value=1,
                     step=1
                 )
-            ], width=6
+            ], width=10
             )
         ]),
-        dbc.Row(
+        dbc.Row([
+            dbc.Col([
+                html.H3('Oscilaciones del Perito Moreno'),
+                html.P(''),
+                html.P(''),
+                html.H5('Periodo promedio: 5 años (no fijo)'),
+                html.P(''),
+                html.P(''),
+                html.H5('Rango máximo de oscilación: 150 metros'),
+                html.P(''),
+                html.P(''),
+                html.H5('Deshielo en 60 años: 1000 km2'),  
+                html.P(''),
+                html.P(''),
+                html.H5('Causa principal: gases de efecto invernadero')
+                ], width=4
+            ),
             dbc.Col(
                 dcc.Graph(id='graph_retrocesos'),
-                width={'size': 10, 'offset': 1}
+                width=8
             )
-        )
+        ])
     ])
 ])
 # Define callback to update graph
@@ -60,13 +76,13 @@ layout = html.Div([
 )
 
 def update_figure(tiempo, semilla):    
-    variabilidad_default = 0.6 
+    variabilidad = 0.4
     longitud = 50
     Z = generar_terreno(
             tamaño=(longitud, longitud),
             altura_min=0,
             altura_max=5,
-            variabilidad=variabilidad_default,
+            variabilidad=variabilidad,
             semilla=semilla
         )
     fila_de_ceros = np.full(longitud, 0)
@@ -113,11 +129,11 @@ def update_figure(tiempo, semilla):
             zaxis = dict(ticks='',visible=False),
         ),
         scene_camera = dict(
-            eye=dict(x=1.2, y=0.1, z=1)
+            eye=dict(x=1, y=0.6, z=0.3)
         ),
-        width=1000,
-        height=700,
-        margin=dict(t=50, r=100, l=100, b=0)
+        width=800,
+        height=500,
+        margin=dict(t=0, r=0, l=0, b=0)
     )
 
     return fig
