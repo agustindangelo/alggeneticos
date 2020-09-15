@@ -17,7 +17,7 @@ layout = html.Div([
         dbc.Row([
             dbc.Col(
                 dbc.Card(
-                    html.H4(children='Modelado de Glaciares Mediante el Alg. del Diamante Cuadrado',
+                    html.H4(children='MODELADO DEL DERRETIMIENTO DE GLACIARES',
                             className="text-center text-light bg-dark"),
                     body=True, color="dark")
                 , className="mb-4")
@@ -30,18 +30,8 @@ layout = html.Div([
                 ],
                 id="styled-numeric-input",
                 ),
-                width=3
+                width=2
             ),
-            dbc.Col(
-                html.Div([
-                    html.H5("Longitud del lado"),
-                    dbc.Input(placeholder="Longitud", type="number", min=10, max=100, value=25, id="input_longitud"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=3
-            ),
-            
             dbc.Col([
                 html.H4("Año"),
                 dcc.Slider(
@@ -52,33 +42,53 @@ layout = html.Div([
                     step=None,
                     marks={i: f'{i}' for i in range(1950, 2091, 10)}
                 )
-            ], width=6
+            ], width=10
             )
         ]),
-        dbc.Row(
+        dbc.Row([
+            dbc.Col([
+                html.H4('Derretimiento a lo largo de los años'),
+                html.P(''),
+                html.P(''),
+                html.H6('Los valores de temperatura para cada año son promedios que comprenden a toda la región patagónica.'),
+                html.P(''),
+                html.P(''),
+                html.H6('Para final de siglo, se estima que los glaciares de la región habrán perdido el 90% de su volumen.'),
+                html.P(''),
+                html.P(''),
+                html.H6('En los últimos 60 años, se derritieron 1000 km**2 de superficie glaciar sólo en la patagonia.'),  
+                html.P(''),
+                html.P(''),
+                html.H6('Causa principal: calentamiento global a causa de gases de efecto invernadero.')
+                ], width=4
+            ),
             dbc.Col(
-                dcc.Graph(id='graph_glaciares'),
-                width={'size': 10, 'offset': 1}
+                dcc.Graph(
+                    id='graph_glaciares',
+                    config={
+                        'displayModeBar': False
+                    }
+                ),
+                width=8
             )
-        )
+        ])
     ])
 ])
 # Define callback to update graph
 @app.callback(
     Output('graph_glaciares', 'figure'),
     [Input('slider_anio', 'value'),
-     Input('input_semilla', 'value'),
-     Input('input_longitud', 'value')]
+     Input('input_semilla', 'value')]
 )
 
-def update_figure(anio, semilla, longitud):
+def update_figure(anio, semilla):
     factor_var=0.0869 #cambio de variabilidad x cambio de °C
     factor_altura=9.13 #cambio de altura x cambio de °C
     temp_default=7 #en °C para el año 2020
     altura_min_defaut=53 #en metros para el año 2020
     altura_max_default=60 #en metros para el año 2020
-    variabilidad_default=0.6 #para el año 2020
-
+    variabilidad_default=0.7 #para el año 2020
+    longitud=50
     temps = {
         1950: 4.9,
         1960: 5,
@@ -155,16 +165,19 @@ def update_figure(anio, semilla, longitud):
     fig = go.Figure(data = superficies)
 
     fig.update_layout(
-        title=f'Año {anio}, temperatura promedio: {temp}',
-        titlefont={'size':30},
+        title=f'Año {anio} | Temp. Media: {temp} | Altura: {(altura_max+altura_min)/2} metros',
+        titlefont={'size':25},
         scene = dict(
-            xaxis = dict(ticks='',visible=False),
+            xaxis = dict(ticks='', visible=False, range=[0,longitud]),
             yaxis = dict(ticks='',visible=False),
             zaxis = dict(ticks='',visible=False),
         ),
-        width=1000,
-        height=700,
-        margin=dict(t=50, r=100, l=100, b=0)
+        scene_camera = dict(
+            eye=dict(x=1, y=0.6, z=0.3)
+        ),
+        width=800,
+        height=500,
+        margin=dict(t=50, r=0, l=0, b=0)
     )
 
     return fig

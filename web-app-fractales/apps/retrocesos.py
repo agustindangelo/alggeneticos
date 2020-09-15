@@ -46,23 +46,28 @@ layout = html.Div([
         ]),
         dbc.Row([
             dbc.Col([
-                html.H3('Oscilaciones del Perito Moreno'),
+                html.H4('Oscilaciones del Perito Moreno'),
                 html.P(''),
                 html.P(''),
-                html.H5('Periodo promedio: 5 años (no fijo)'),
+                html.H6('Periodo promedio: 5 años (no fijo)'),
                 html.P(''),
                 html.P(''),
-                html.H5('Rango máximo de oscilación: 150 metros'),
+                html.H6('Rango máximo de oscilación: 150 metros'),
                 html.P(''),
                 html.P(''),
-                html.H5('Deshielo en 60 años: 1000 km2'),  
+                html.H6('Deshielo en 60 años: 1000 km2'),  
                 html.P(''),
                 html.P(''),
-                html.H5('Causa principal: gases de efecto invernadero')
+                html.H6('Causa principal: calentamiento global a causa de gases de efecto invernadero')
                 ], width=4
             ),
             dbc.Col(
-                dcc.Graph(id='graph_retrocesos'),
+                dcc.Graph(
+                    id='graph_retrocesos',
+                    config={
+                        'displayModeBar': False
+                    }
+                ),
                 width=8
             )
         ])
