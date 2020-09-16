@@ -18,7 +18,7 @@ layout = html.Div([
         dbc.Row([
             dbc.Col(
                 dbc.Card(
-                    html.H4(children='Experimentación - Alg. del Diamante Cuadrado',
+                    html.H4(children='PARÁMETROS DEL ALGORITMO',
                             className="text-center text-light bg-dark"),
                     body=True, color="dark")
                 , className="mb-4"
@@ -49,7 +49,7 @@ layout = html.Div([
                     id='slider_altura_max',
                     min=5,
                     max=10,
-                    value=7,
+                    value=10,
                     marks={i: f'{i}' for i in range(5,11)}
                 )],
                 width=6
@@ -62,7 +62,7 @@ layout = html.Div([
                     id='slider_variabilidad',
                     min=0,
                     max=100,
-                    value=50,
+                    value=70,
                     marks={i: f'{i/100}' for i in range(0,101,10)}
                 )],
                 width=6    
@@ -73,7 +73,7 @@ layout = html.Div([
                     id='slider_altura_min',
                     min=0,
                     max=5,
-                    value=3,
+                    value=0,
                     marks={i: f'{i}' for i in range(0,6)}
                 )],
                 width=6

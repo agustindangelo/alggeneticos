@@ -10,7 +10,7 @@ dropdown = dbc.DropdownMenu(
     children=[
         dbc.DropdownMenuItem("Información General", href="/home", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Modelado de Glaciares", href="/glaciares", style={'font-size': '24px'}),
-        dbc.DropdownMenuItem("Modelado de Retrocesos del Glaciar", href="/retrocesos", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Modelado de Retrocesos", href="/retrocesos", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Experimentación", href="/experimentacion", style={'font-size': '24px'}),
     ],
     nav = True,
@@ -22,8 +22,7 @@ dropdown = dbc.DropdownMenu(
 navbar = dbc.Navbar(
     dbc.Container([
            html.A(
-                dbc.Row(
-                    [
+                dbc.Row([
                         dbc.Col(html.Img(src='https://image.flaticon.com/icons/png/512/82/82990.png', width='70px')),
                         dbc.Col(dbc.NavbarBrand("Grupo 1", className="ml-2", style={'font-size': '32px'})),
                     ],

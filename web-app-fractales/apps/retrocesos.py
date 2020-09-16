@@ -17,21 +17,12 @@ layout = html.Div([
         dbc.Row([
             dbc.Col(
                 dbc.Card(
-                    html.H4(children='Modelado del Desplazamiento del Glaciar',
+                    html.H4(children='MODELADO DE LOS DESPLAZAMIENTOS',
                             className="text-center text-light bg-dark"),
                     body=True, color="dark")
                 , className="mb-4")
         ]),
         dbc.Row([
-            dbc.Col(
-                html.Div([
-                    html.H5("Semilla"),
-                    dbc.Input(type="number", value=0, id="input_semilla"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=2
-            ),
             dbc.Col([
                 html.H4("Tiempo"),
                 dcc.Slider(
@@ -41,24 +32,23 @@ layout = html.Div([
                     value=1,
                     step=1
                 )
-            ], width=10
-            )
+            ])
         ]),
         dbc.Row([
             dbc.Col([
                 html.H4('Oscilaciones del Perito Moreno'),
                 html.P(''),
                 html.P(''),
-                html.H6('Periodo promedio: 5 años (no fijo)'),
+                html.H5('Periodo promedio: 5 años (no fijo)'),
                 html.P(''),
                 html.P(''),
-                html.H6('Rango máximo de oscilación: 150 metros'),
+                html.H5('Rango máximo de oscilación: 150 metros'),
                 html.P(''),
                 html.P(''),
-                html.H6('Deshielo en 60 años: 1000 km2'),  
+                html.H5('Deshielo en 60 años: 1000 km2'),  
                 html.P(''),
                 html.P(''),
-                html.H6('Causa principal: calentamiento global a causa de gases de efecto invernadero')
+                html.H5('Causa principal: calentamiento global a causa de gases de efecto invernadero')
                 ], width=4
             ),
             dbc.Col(
@@ -76,13 +66,13 @@ layout = html.Div([
 # Define callback to update graph
 @app.callback(
     Output('graph_retrocesos', 'figure'),
-    [Input('slider_tiempo', 'value'),
-     Input('input_semilla', 'value')]
+    Input('slider_tiempo', 'value'),
 )
 
-def update_figure(tiempo, semilla):    
-    variabilidad = 0.4
-    longitud = 50
+def update_figure(tiempo):    
+    variabilidad = 0.55
+    longitud = 25
+    semilla = 0
     Z = generar_terreno(
             tamaño=(longitud, longitud),
             altura_min=0,

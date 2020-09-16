@@ -23,15 +23,6 @@ layout = html.Div([
                 , className="mb-4")
         ]),
         dbc.Row([
-            dbc.Col(
-                html.Div([
-                    html.H5("Semilla"),
-                    dbc.Input(type="number", value=0, id="input_semilla"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=2
-            ),
             dbc.Col([
                 html.H4("Año"),
                 dcc.Slider(
@@ -42,24 +33,23 @@ layout = html.Div([
                     step=None,
                     marks={i: f'{i}' for i in range(1950, 2091, 10)}
                 )
-            ], width=10
-            )
+            ])
         ]),
         dbc.Row([
             dbc.Col([
                 html.H4('Derretimiento a lo largo de los años'),
                 html.P(''),
                 html.P(''),
-                html.H6('Los valores de temperatura para cada año son promedios que comprenden a toda la región patagónica.'),
+                html.H5('Los valores de temperatura para cada año son promedios que comprenden a toda la región patagónica.'),
                 html.P(''),
                 html.P(''),
-                html.H6('Para final de siglo, se estima que los glaciares de la región habrán perdido el 90% de su volumen.'),
+                html.H5('Para final de siglo, se estima que los glaciares de la región habrán perdido el 90% de su volumen.'),
                 html.P(''),
                 html.P(''),
-                html.H6('En los últimos 60 años, se derritieron 1000 km**2 de superficie glaciar sólo en la patagonia.'),  
+                html.H5('En los últimos 60 años, se derritieron 1000 km**2 de superficie glaciar sólo en la patagonia.'),  
                 html.P(''),
                 html.P(''),
-                html.H6('Causa principal: calentamiento global a causa de gases de efecto invernadero.')
+                html.H5('Causa principal: calentamiento global a causa de gases de efecto invernadero.')
                 ], width=4
             ),
             dbc.Col(
@@ -77,18 +67,18 @@ layout = html.Div([
 # Define callback to update graph
 @app.callback(
     Output('graph_glaciares', 'figure'),
-    [Input('slider_anio', 'value'),
-     Input('input_semilla', 'value')]
+    Input('slider_anio', 'value')
 )
 
-def update_figure(anio, semilla):
+def update_figure(anio):
     factor_var=0.0869 #cambio de variabilidad x cambio de °C
     factor_altura=9.13 #cambio de altura x cambio de °C
     temp_default=7 #en °C para el año 2020
     altura_min_defaut=53 #en metros para el año 2020
     altura_max_default=60 #en metros para el año 2020
-    variabilidad_default=0.7 #para el año 2020
-    longitud=50
+    variabilidad_default=0.6 #para el año 2020
+    longitud=35
+    semilla=0
     temps = {
         1950: 4.9,
         1960: 5,
@@ -119,7 +109,7 @@ def update_figure(anio, semilla):
             altura_min=altura_min,
             altura_max=altura_max,
             variabilidad=variabilidad,
-            semilla=semilla
+            semilla=0
         )
     
     z_minimo = np.min(Z)
@@ -165,7 +155,7 @@ def update_figure(anio, semilla):
     fig = go.Figure(data = superficies)
 
     fig.update_layout(
-        title=f'Año {anio} | Temp. Media: {temp} | Altura: {(altura_max+altura_min)/2} metros',
+        title=f'Año {anio} | Temp. Media: {temp} | Altura: {((altura_max+altura_min)/2):6.2f} metros',
         titlefont={'size':25},
         scene = dict(
             xaxis = dict(ticks='', visible=False, range=[0,longitud]),
@@ -173,7 +163,7 @@ def update_figure(anio, semilla):
             zaxis = dict(ticks='',visible=False),
         ),
         scene_camera = dict(
-            eye=dict(x=1, y=0.6, z=0.3)
+            eye=dict(x=0.7, y=0.7, z=0.15)
         ),
         width=800,
         height=500,
