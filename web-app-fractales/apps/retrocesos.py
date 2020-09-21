@@ -70,13 +70,13 @@ layout = html.Div([
 )
 
 def update_figure(tiempo):    
-    variabilidad = 0.55
-    longitud = 25
+    variabilidad = 0.85
+    longitud = 35
     semilla = 0
     Z = generar_terreno(
             tamaño=(longitud, longitud),
-            altura_min=0,
-            altura_max=5,
+            altura_min=10,
+            altura_max=20,
             variabilidad=variabilidad,
             semilla=semilla
         )
@@ -124,7 +124,7 @@ def update_figure(tiempo):
             zaxis = dict(ticks='',visible=False),
         ),
         scene_camera = dict(
-            eye=dict(x=1, y=0.6, z=0.3)
+            eye=dict(x=1.2, y=0.8, z=0.5)
         ),
         width=800,
         height=500,

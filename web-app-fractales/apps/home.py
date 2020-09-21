@@ -118,15 +118,6 @@ descripcion = "En este trabajo, implementamos el algoritmo del diamante cuadrado
 
 layout = html.Div([
     dbc.Container([
-        dbc.Row([
-            dbc.Col(
-                dbc.Card(
-                    html.H4('ALGORITMOS GENÉTICOS - CICLO LECTIVO 2020', className="text-center text-light bg-dark"),
-                    body=True, 
-                    color="dark"
-                )
-                , className="mb-4")
-        ]),
 
         dbc.Row([
             dbc.Col(
@@ -137,13 +128,12 @@ layout = html.Div([
                 #     )
                 # ])
                 dbc.Jumbotron([
-                    html.H3('Descripcion', className='display-4'),
+                    html.H3('Algoritmos Genéticos, Ciclo Lectivo 2020', className='display-4'),
                     html.P(descripcion, style={'font-size': '20px'})
                     
                 ])
             )
         ])
     ], fluid=True),
-    cards
-
+    cards,
 ])

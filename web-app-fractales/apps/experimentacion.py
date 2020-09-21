@@ -119,39 +119,39 @@ def update_figure(semilla, longitud, variabilidad, altura_min, altura_max):
 #   ---------- Pared 1:
     x = np.array([fila_de_ceros, fila_de_ceros])
     y = np.array([fila_lineal, fila_lineal])
-    z = np.array([fila_z_minimo, Z[:,0]])
+    z = np.array([fila_de_ceros, Z[:,0]])
     
     superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 2:
     x = np.array([fila_lineal, fila_lineal])
     y = np.array([fila_de_ceros, fila_de_ceros])
-    z = np.array([fila_z_minimo, Z[0,:]])   
+    z = np.array([fila_de_ceros, Z[0,:]])   
 
     superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 3:
     x = np.array([fila_lineal, fila_lineal])
     y = np.array([fila_de_valor_limite, fila_de_valor_limite])
-    z = np.array([fila_z_minimo, Z[longitud-1,:]])   
+    z = np.array([fila_de_ceros, Z[longitud-1,:]])   
 
     superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ---------- Pared 4:
     x = np.array([fila_de_valor_limite, fila_de_valor_limite])
     y = np.array([fila_lineal, fila_lineal])
-    z = np.array([fila_z_minimo, Z[:, longitud-1]]) 
+    z = np.array([fila_de_ceros, Z[:, longitud-1]]) 
 
     superficies.append(go.Surface(x = x, y = y, z = z, colorscale=[[0,'rgb(192,229,232)'],[1,'rgb(66,146,198)']],cmin=z_minimo, cmax=z_maximo, reversescale=True, showscale=False))
 #   ----------- Piso:
     x, y = np.meshgrid(fila_lineal, fila_lineal)
-    z = np.full((longitud, longitud), z_minimo)
+    z = np.full((longitud, longitud), 0)
     
     superficies.append(go.Surface(x = x, y = y, z = z, colorscale='blues', showscale=False))
     
     fig = go.Figure(data = superficies)
 
     fig.update_layout(
-                    width=1000,
-                    height=700,
-                    margin=dict(t=0, r=100, l=100, b=0)
-                )
+        width=1000,
+        height=700,
+        margin=dict(t=0, r=100, l=100, b=0)
+    )
 
     return fig

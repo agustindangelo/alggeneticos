@@ -9,7 +9,7 @@ from dash.dependencies import Input, Output
 dropdown = dbc.DropdownMenu(
     children=[
         dbc.DropdownMenuItem("Información General", href="/home", style={'font-size': '24px'}),
-        dbc.DropdownMenuItem("Modelado de Glaciares", href="/glaciares", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Modelado del Derretimiento", href="/glaciares", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Modelado de Retrocesos", href="/retrocesos", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Experimentación", href="/experimentacion", style={'font-size': '24px'}),
     ],
@@ -34,7 +34,6 @@ navbar = dbc.Navbar(
             dbc.NavbarToggler(id="navbar-toggler2"),
             dbc.Collapse(
                 dbc.Nav(
-                    # right align dropdown menu with ml-auto className
                     [dropdown], className="ml-auto", navbar=True
                 ),
                 id="navbar-collapse2",
