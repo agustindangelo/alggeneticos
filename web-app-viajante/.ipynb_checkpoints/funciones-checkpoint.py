@@ -24,7 +24,7 @@ def formatear(tabla_capitales, recorrido):
     return tabla_final
 
 
-def main_heuristicoA(tabla_distancias, nro_ciudad):
+def heuristicoA(tabla_distancias, nro_ciudad):
     t0 = time.perf_counter()
 
     recorrido = []

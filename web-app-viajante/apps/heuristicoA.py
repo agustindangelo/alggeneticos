@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 
 from dash.dependencies import Input, Output
 from app import app
-from funciones import importar_tablas, heuristicoA, formatear
+from funciones import importar_tablas, main_heuristicoA, formatear
 import pandas as pd 
 import numpy as np 
 import plotly.graph_objs as go
@@ -51,7 +51,16 @@ layout = html.Div([
                     ],
                     value=0,
                     id='input_capital'
-                ), 
+                ), width = 6
+            ),
+            dbc.Col(
+                dcc.Checklist(
+                    options=[
+                        {'label': 'Mantener trazos anteriores', 'value': True}
+                    ],
+                    id='input_trazos',
+                    labelStyle={'display': 'inline-block'}
+                )  
             )
         ]),
         dbc.Row([
@@ -66,24 +75,28 @@ layout = html.Div([
 # Define callback to update graph
 @app.callback(
     Output('mapa_heuristicoA', 'figure'),
-    Input('input_capital', 'value')
+    [Input('input_capital', 'value'),
+     Input('input_trazos', 'value')]
 )
 
-def update_figure(input_capital):
+def update_figure(input_capital, mantener_trazo):
 
     tabla_distancias, tabla_capitales = importar_tablas()
-    recorrido, distancia_recorrida, tiempo_ejecucion = heuristicoA(tabla_distancias, input_capital)
+    recorrido, distancia_recorrida, tiempo_ejecucion = main_heuristicoA(tabla_distancias, input_capital)
     cap = formatear(tabla_capitales, recorrido)
 
     # --------------------------- dibujado del mapa
-    mantener_trazo = False
     frames = []
     if mantener_trazo:
         for k in range(len(cap)):
-            frames.append(go.Frame(data=[go.Scattermapbox(mode='lines', lat=cap['latitud'][:k+1],  lon=cap['longitud'][:k+1])], name=f'frame{k}'))
+            frames.append(go.Frame(data=[
+                go.Scattermapbox(mode='lines', lat=cap['latitud'][:k+1],  lon=cap['longitud'][:k+1])], name=f'frame{k}'))
     else:
         for k in range(len(cap)-1):
-            frames.append(go.Frame(data=[go.Scattermapbox(mode='lines', lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']],  lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']])], name=f'frame{k}'))
+            frames.append(go.Frame(data=[
+                go.Scattermapbox(mode='lines', lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']]),
+                go.Scattermapbox(mode='markers', lat=cap['latitud'],  lon=cap['longitud'])
+                ], name=f'frame{k}'))
     # dibujo la figura, y le asigno los cuadros
     fig = go.Figure(
         data=go.Scattermapbox(
@@ -93,10 +106,9 @@ def update_figure(input_capital):
             hoverinfo='text'
         ),
         layout=go.Layout(        
-            title_text=f'Distancia Recorrida: {distancia_recorrida:8.0f} km  |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
+            title_text=f'Distancia Recorrida:{distancia_recorrida:8.0f} km    |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
             hovermode="closest",
             font={'size': 18}
-
         ),
         frames=frames
     )
@@ -105,7 +117,7 @@ def update_figure(input_capital):
             buttons = [
                 dict(
                     args = [None, {"frame": {"duration": 1000, "redraw": True},
-                                    "fromcurrent": False, 
+                                    "fromcurrent": True, 
                                     "transition": {"duration": 500, 'easing': 'cubic-in-out'}
                                 }],
                     label = "Recorrer",

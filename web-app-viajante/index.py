@@ -3,16 +3,16 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 
 from app import app
-from apps import home, ejercicio1, ejercicio2, ejercicio3, ejercicio4
+from apps import home, exhaustivo, heuristicoA, heuristicoB, geneticos
 from dash.dependencies import Input, Output
 
 navbar = dbc.NavbarSimple(
         children=[
             dbc.NavItem(dbc.NavLink("Información General", href="/home")),
-            dbc.NavItem(dbc.NavLink("Ejercicio 1", href="/ejercicio1")),
-            dbc.NavItem(dbc.NavLink("Ejercicio 2", href="/ejercicio2")),
-            dbc.NavItem(dbc.NavLink("Ejercicio 3", href="/ejercicio3")),
-            dbc.NavItem(dbc.NavLink("Ejercicio 4", href="/ejercicio4")),
+            dbc.NavItem(dbc.NavLink("Enfoque Exhaustivo", href="/exhaustivo")),
+            dbc.NavItem(dbc.NavLink("Enfoque Heurístico con Restricción", href="/heuristicoA")),
+            dbc.NavItem(dbc.NavLink("Ejercicio 3", href="/heuristicoB")),
+            dbc.NavItem(dbc.NavLink("Alg. Genéticos 4", href="/geneticos")),
         ],
         brand="GRUPO 1 - TP N°3",
         color="primary",
@@ -33,7 +33,7 @@ app.layout = html.Div([
 
 def display_page(pathname):
     if pathname == '/ejercicio1':
-        return ejercicio1.layout
+        return exhaustivo.layout
     elif pathname == '/ejercicio2':
         return ejercicio2.layout
     elif pathname == '/ejercicio3':
