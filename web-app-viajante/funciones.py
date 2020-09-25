@@ -45,6 +45,7 @@ def main_heuristicoA(tabla_distancias, nro_ciudad):
             distancia_recorrida += distancia_mas_cercana  
             recorrido.append(id_capital_sig)
             tabla_auxiliar = tabla_distancias[id_capital_sig].copy() # reinicio la tabla auxiliar para que tenga todas las filas
+    
     recorrido.append(nro_ciudad) #vuelvo a la ciudad de inicio
     tf = time.perf_counter()
     tiempo_ejecucion = tf - t0

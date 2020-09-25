@@ -6,7 +6,7 @@ card_agu = [
     dbc.CardHeader(           
         "Agustín D'Angelo",
         className="card-title",
-        style={'font-size': 20}
+        style={'font-size': 20, 'font-weight': 'bold'}
     ),
     dbc.CardBody([
             html.P(
@@ -26,7 +26,7 @@ card_lu = [
     dbc.CardHeader(           
         "Lucía Fabbri",
         className="card-title",
-        style={'font-size': 20}
+        style={'font-size': 20, 'font-weight': 'bold'}
     ),
     dbc.CardBody([
             html.P(
@@ -46,7 +46,7 @@ card_juli = [
     dbc.CardHeader(           
         "Julián Lostumbo",
         className="card-title",
-        style={'font-size': 20}
+        style={'font-size': 20, 'font-weight': 'bold'}
     ),
     dbc.CardBody([
             html.P(
@@ -66,7 +66,7 @@ card_chucho = [
     dbc.CardHeader(           
         "Lucio Serenelli",
         className="card-title",
-        style={'font-size': 20}
+        style={'font-size': 20, 'font-weight': 'bold'}
     ),
     dbc.CardBody([
             html.P(
@@ -128,8 +128,9 @@ layout = html.Div([
                 #     )
                 # ])
                 dbc.Jumbotron([
-                    html.H3('Algoritmos Genéticos, Ciclo Lectivo 2020', className='display-4'),
-                    html.H4('Problema del viajante argentino'),
+                    html.H3('Problema del viajante argentino', className='display-4'),
+                    html.H3('Algoritmos Genéticos, Ciclo Lectivo 2020', className='display-5'),
+                    html.Hr(),
                     html.P(descripcion, style={'font-size': '20px'})
                     
                 ])

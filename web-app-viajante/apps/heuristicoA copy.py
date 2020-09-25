@@ -2,13 +2,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from app import app
 from funciones import importar_tablas, main_heuristicoA, formatear
 import pandas as pd 
 import numpy as np 
 import plotly.graph_objs as go
-import time
 
 
 layout = html.Div([
@@ -57,31 +56,31 @@ layout = html.Div([
             dbc.Col(
                 dcc.Checklist(
                     options=[
-                        {'label': 'Mantener trazos anteriores', 'value': 'True'}
+                        {'label': 'Mantener trazos anteriores', 'value': True}
                     ],
                     id='input_trazos',
-                    labelStyle={'font-size': 20},
-                    inputStyle={'size': 10, 'margin': 10}
-                ), width=6  
+                    labelStyle={'display': 'inline-block'}
+                )  
             )
         ]),
         dbc.Row([
             dbc.Col([
-                html.Hr(),
-                dbc.Spinner([
-                        dcc.Graph(id="mapa_heuristicoA")
-                    ], size="lg", color="primary", type="grow", fullscreen=True, spinner_style={"width": "10rem", "height": "10rem"}),
+                dcc.Graph(id='mapa_heuristicoA')
             ])
         ]),
         html.Hr()
     ])
 ])
 
+# Define callback to update graph
 @app.callback(
-    Output("mapa_heuristicoA", "figure"),
-    [Input('input_capital', 'value'), Input('input_trazos', 'value')]
+    Output('mapa_heuristicoA', 'figure'),
+    [Input('input_capital', 'value'),
+     Input('input_trazos', 'value')]
 )
-def load_output(input_capital, mantener_trazo):
+
+def update_figure(input_capital, mantener_trazo):
+
     tabla_distancias, tabla_capitales = importar_tablas()
     recorrido, distancia_recorrida, tiempo_ejecucion = main_heuristicoA(tabla_distancias, input_capital)
     cap = formatear(tabla_capitales, recorrido)
@@ -91,22 +90,12 @@ def load_output(input_capital, mantener_trazo):
     if mantener_trazo:
         for k in range(len(cap)):
             frames.append(go.Frame(data=[
-                go.Scattermapbox(
-                    mode='markers+lines', 
-                    lat=cap['latitud'][:k+1],  
-                    lon=cap['longitud'][:k+1],
-                    marker={'size': 8, 'color': 'red'},
-                    line={'color': 'blue', 'width':2})
-                ], name=f'frame{k}'))
+                go.Scattermapbox(mode='lines', lat=cap['latitud'][:k+1],  lon=cap['longitud'][:k+1])], name=f'frame{k}'))
     else:
         for k in range(len(cap)-1):
             frames.append(go.Frame(data=[
-                    go.Scattermapbox(
-                        mode='markers+lines', 
-                        lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], 
-                        lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']],
-                        marker={'size': 8, 'color': 'red'},
-                        line={'color': 'blue', 'width':2})
+                go.Scattermapbox(mode='lines', lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']]),
+                go.Scattermapbox(mode='markers', lat=cap['latitud'],  lon=cap['longitud'])
                 ], name=f'frame{k}'))
     # dibujo la figura, y le asigno los cuadros
     fig = go.Figure(
@@ -169,14 +158,13 @@ def load_output(input_capital, mantener_trazo):
                         visible=True, 
                         xanchor= 'center'
                     ),  
-                    borderwidth=2,
                     len=1) #slider length
             ]
 
     fig.update_layout(
         sliders = sliders,
         updatemenus = updatemenus,
-        margin={"r":50,"t":50,"l":50,"b":50},
+        margin={"r":0,"t":50,"l":0,"b":50},
         mapbox_style="open-street-map",
         autosize=True,
         hovermode='closest',
@@ -190,4 +178,4 @@ def load_output(input_capital, mantener_trazo):
         height=600
     )
     return fig
-    
+

@@ -6,19 +6,47 @@ from app import app
 from apps import home, exhaustivo, heuristicoA, heuristicoB, geneticos
 from dash.dependencies import Input, Output
 
-navbar = dbc.NavbarSimple(
-        children=[
-            dbc.NavItem(dbc.NavLink("Información General", href="/home")),
-            dbc.NavItem(dbc.NavLink("Enfoque Exhaustivo", href="/exhaustivo")),
-            dbc.NavItem(dbc.NavLink("Enfoque Heurístico con Restricción", href="/heuristicoA")),
-            dbc.NavItem(dbc.NavLink("Ejercicio 3", href="/heuristicoB")),
-            dbc.NavItem(dbc.NavLink("Alg. Genéticos 4", href="/geneticos")),
-        ],
-        brand="GRUPO 1 - TP N°3",
-        color="primary",
-        dark=True,
-    )
+dropdown = dbc.DropdownMenu(
+    children=[
+        dbc.DropdownMenuItem("Información General", href="/home", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Enfoque Exhaustivo", href="/exhaustivo", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Enfoque Heurístico con Restricción", href="/heuristicoA", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Enfoque Heurístico", href="/heuristicoB", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Algoritmo Genético", href="/geneticos", style={'font-size': '24px'}),
+    ],
+    nav = True,
+    in_navbar = True,
+    label = "Secciones",
+    style={'font-size': '24px'}
+)
 
+navbar = dbc.Navbar(
+    dbc.Container([
+           html.A(
+                dbc.Row([
+                        dbc.Col(html.Img(src='https://image.flaticon.com/icons/png/512/82/82990.png', width='70px')),
+                        dbc.Col(dbc.NavbarBrand("Grupo 1", className="ml-2", style={'font-size': '32px'})),
+                    ],
+                    align="center",
+                    no_gutters=True,
+                ),
+                href="/home",
+            ),
+            dbc.NavbarToggler(id="navbar-toggler2"),
+            dbc.Collapse(
+                dbc.Nav(
+                    [dropdown], className="ml-auto", navbar=True
+                ),
+                id="navbar-collapse2",
+                style={'font-size': 25},
+                navbar=True,
+            ),
+        ]
+    ),
+    color="primary",
+    dark=True,
+    className="mb-4",
+)
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -32,14 +60,14 @@ app.layout = html.Div([
 )
 
 def display_page(pathname):
-    if pathname == '/ejercicio1':
+    if pathname == '/exhaustivo':
         return exhaustivo.layout
-    elif pathname == '/ejercicio2':
-        return ejercicio2.layout
-    elif pathname == '/ejercicio3':
-        return ejercicio3.layout
-    elif pathname == '/ejercicio4':
-        return ejercicio4.layout
+    elif pathname == '/heuristicoA':
+        return heuristicoA.layout
+    elif pathname == '/heuristicoB':
+        return heuristicoB.layout
+    elif pathname == '/geneticos':
+        return geneticos.layout
     else:
         return home.layout
 
