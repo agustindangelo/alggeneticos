@@ -2,13 +2,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from app import app
-from bitarray import bitarray
+from funciones import importar_tablas, main_exhaustivo, formatear
 import pandas as pd 
 import numpy as np 
 import plotly.graph_objs as go
-
 
 layout = html.Div([
     dbc.Container([
@@ -24,70 +23,71 @@ layout = html.Div([
             dbc.Col(
                 html.Div([
                     html.H5("Cantidad de provincias"),
-                    dbc.Input(type="number", value=4, id="input_cantidad"),
+                    dbc.Input(type="number", min=3, max=12, value=6, id="input_cantidad"),
                 ],
                 id="styled-numeric-input",
                 ),
                 width=3
             ),
-        ]),
+            dbc.Col(
+                dcc.Checklist(
+                    options=[
+                        {'label': 'Mantener trazos anteriores', 'value': 'True'}
+                    ],
+                    id='input_trazos',
+                    labelStyle={'font-size': 20},
+                    inputStyle={'size': 10, 'margin': 10}
+                ), width=6  
+            )
+        ]), 
         dbc.Row([
             dbc.Col([
-                dcc.Graph(id='graph')
+                html.Hr(),
+                dbc.Spinner([
+                        dcc.Graph(id="mapa_exhaustivo")
+                    ], size="lg", color="primary", type="border", fullscreen=True, spinner_style={"width": "10rem", "height": "10rem"}),
             ])
-        ])
+        ]),
+        html.Hr()
     ])
 ])
 
 # Define callback to update graph
 @app.callback(
-    Output('graph', 'figure'),
-    Input('input_cantidad', 'value')
+    Output("mapa_exhaustivo", "figure"),
+    [Input('input_cantidad', 'value'), Input('input_trazos', 'value')]
 )
 
-def update_figure(input_cantidad):
-    def permutacion_binaria(n, m):
-    # función recursiva que genera permutaciones en cadenas binarias de longitud n, con m cantidad de unos
-    # Detalle de implementacion en python: la palabra clave yield es el análogo de return, pero retorna un objeto generador
-        if m < n:                                                  
-            if m > 0:
-                for x in permutacion_binaria(n-1,m-1):
-                    yield bitarray([1]) + x
-                for x in permutacion_binaria(n-1,m):
-                    yield bitarray([0]) + x
-            else:
-                yield n * bitarray('0') 
-        else:
-            yield n * bitarray('1')
+def update_figure(input_cantidad, mantener_trazo):
+    if input_cantidad == None or input_cantidad <= 2:
+        return go.Figure()
 
-    def generar_combinaciones(n):
-    
-        # función que genera todas las cadenas binarias posibles de longitud n,
-        # el valor de n debe indicarse como parámetro de la función.
-        n = int(n)
-        cadenas = []
-        for i in range(n):
-            for cadena in permutacion_binaria(n,i):
-                cadenas.append((cadena))
-    
-        for index, cadena in enumerate(cadenas):
-            cadenas[index] = [int(xi) for xi in cadena.tolist()]   # convertimos el arreglo de bits en una lista de python
-        for index, cadena in enumerate(cadenas):
-            cadenas[index] = ''.join([str(xi) for xi in cadena])   # convertimos la lista de python en un string
-    
-        cadenas.append('1' * n)
-        #se devuelve una lista con las combinaciones posibles de '1's y '0's donde cada bit representa un elemento y si ese elemento se encuentra en la combinacion o no   
-        return cadenas
+    tabla_distancias, tabla_capitales = importar_tablas()
+    recorrido_minimo, distancia_minima, tiempo_ejecucion = main_exhaustivo(tabla_distancias, input_cantidad)
+    cap = formatear(tabla_capitales, recorrido_minimo)
 
-    cap = pd.read_csv('apps/assets/capitales.csv')
-    mantener_trazo = False
+   # --------------------------- dibujado del mapa
     frames = []
     if mantener_trazo:
         for k in range(len(cap)):
-            frames.append(go.Frame(data=[go.Scattermapbox(mode='lines', lat=cap['latitud'][:k+1],  lon=cap['longitud'][:k+1])], name=f'frame{k}'))
+            frames.append(go.Frame(data=[
+                go.Scattermapbox(
+                    mode='markers+lines', 
+                    lat=cap['latitud'][:k+1],  
+                    lon=cap['longitud'][:k+1],
+                    marker={'size': 8, 'color': 'red'},
+                    line={'color': 'blue', 'width':2})
+                ], name=f'frame{k}'))
     else:
         for k in range(len(cap)-1):
-            frames.append(go.Frame(data=[go.Scattermapbox(mode='lines', lat=[cap['latitud'][k], cap['latitud'][k+1]],  lon=[cap['longitud'][k], cap['longitud'][k+1]])], name=f'frame{k}'))
+            frames.append(go.Frame(data=[
+                    go.Scattermapbox(
+                        mode='markers+lines', 
+                        lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], 
+                        lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']],
+                        marker={'size': 8, 'color': 'red'},
+                        line={'color': 'blue', 'width':2})
+                ], name=f'frame{k}'))
     # dibujo la figura, y le asigno los cuadros
     fig = go.Figure(
         data=go.Scattermapbox(
@@ -96,16 +96,19 @@ def update_figure(input_cantidad):
             text=cap['capital'],
             hoverinfo='text'
         ),
-        layout=go.Layout(),
+        layout=go.Layout(        
+            title_text=f'Distancia Mínima:{distancia_minima:8.0f} km    |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
+            hovermode="closest",
+            font={'size': 18}
+        ),
         frames=frames
     )
-
 
     updatemenus = [dict(
             buttons = [
                 dict(
                     args = [None, {"frame": {"duration": 1000, "redraw": True},
-                                    "fromcurrent": False, 
+                                    "fromcurrent": True, 
                                     "transition": {"duration": 500, 'easing': 'cubic-in-out'}
                                 }],
                     label = "Recorrer",
@@ -135,7 +138,7 @@ def update_figure(input_cantidad):
                                     frame=dict(duration=400, redraw=True),
                                     transition=dict(duration= 0))
                                     ],
-                                label=f'{cap["capital"][k]}'
+                                label=f'{cap.iloc[k]["capital"]}'
                                 ) for k in range(len(cap))], 
                     active=0,
                     transition={'duration':500 , 'easing': 'cubic-in-out'},
@@ -146,13 +149,14 @@ def update_figure(input_cantidad):
                         visible=True, 
                         xanchor= 'center'
                     ),  
+                    borderwidth=2,
                     len=1) #slider length
             ]
 
     fig.update_layout(
         sliders = sliders,
         updatemenus = updatemenus,
-        margin={"r":0,"t":50,"l":0,"b":0},
+        margin={"r":50,"t":50,"l":50,"b":50},
         mapbox_style="open-street-map",
         autosize=True,
         hovermode='closest',
@@ -166,4 +170,3 @@ def update_figure(input_cantidad):
         height=600
     )
     return fig
-

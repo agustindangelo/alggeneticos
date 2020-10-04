@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np 
 from timeit import time
+import itertools 
 
 def importar_tablas():  
     # ------------------------ formateo de tabla de distancias
@@ -50,3 +51,44 @@ def main_heuristicoA(tabla_distancias, nro_ciudad):
     tf = time.perf_counter()
     tiempo_ejecucion = tf - t0
     return recorrido, distancia_recorrida, tiempo_ejecucion
+
+def generar_recorridos_posibles(cantidad_ciudades):
+    '''
+    componente para el método exhaustivo. Genera todos los recorridos posibles de longitud cantidad_ciudades
+    siempre partiendo desde Bs. As. (para simplificar)
+    '''
+    aux = list(itertools.permutations([i for i in range(cantidad_ciudades)])) # generar permutaciones de las capitales
+    
+    recorridos_posibles = []
+    for recorrido in aux:
+        recorrido_aux = list(recorrido)   # itertools devuelve tuplas pero lo paso a listas
+        recorrido_aux.append(recorrido[0]) # para que vuelva a la ciudad de partida
+        recorridos_posibles.append(recorrido_aux)
+    return recorridos_posibles
+
+def calcular_distancia(tabla_distancias, recorrido):
+    '''
+    dado un recorrido [ciudad 1, ciudad 2,  .., ciudad n, ciudad 1], calcula la longitud del trayecto
+    '''
+    distancia_recorrida = 0
+    for i in range(len(recorrido) - 1):
+        distancia_actual = tabla_distancias[recorrido[i]][recorrido[i+1]]
+        distancia_recorrida = distancia_recorrida + distancia_actual
+    return distancia_recorrida
+
+def main_exhaustivo(tabla_distancias, cantidad_ciudades):
+
+    distancia_minima = 9999999999
+    t0 = time.perf_counter()
+    recorridos_posibles = generar_recorridos_posibles(cantidad_ciudades)
+
+    for recorrido in recorridos_posibles:
+        distancia_recorrida = calcular_distancia(tabla_distancias, recorrido)
+        if distancia_recorrida < distancia_minima:
+            distancia_minima = distancia_recorrida
+            recorrido_minimo = recorrido
+
+    t1 = time.perf_counter()
+    tiempo_ejecucion = t1 - t0
+
+    return recorrido_minimo, distancia_minima, tiempo_ejecucion
