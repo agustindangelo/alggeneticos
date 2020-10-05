@@ -28,7 +28,7 @@ layout = html.Div([
             dbc.Col(
                 html.Div([
                     html.H5("Semilla"),
-                    dbc.Input(type="number", value=0, id="input_semilla"),
+                    dbc.Input(type="number", value=1, id="input_semilla"),
                 ],
                 id="styled-numeric-input",
                 ),
@@ -37,7 +37,7 @@ layout = html.Div([
             dbc.Col(
                 html.Div([
                     html.H5("Longitud del lado"),
-                    dbc.Input(placeholder="Longitud", type="number", min=10, max=100, value=25, id="input_longitud"),
+                    dbc.Input(placeholder="Longitud", type="number", min=10, max=100, value=100, id="input_longitud"),
                 ],
                 id="styled-numeric-input",
                 ),
@@ -62,7 +62,7 @@ layout = html.Div([
                     id='slider_variabilidad',
                     min=0,
                     max=100,
-                    value=70,
+                    value=50,
                     marks={i: f'{i/100}' for i in range(0,101,10)}
                 )],
                 width=6    

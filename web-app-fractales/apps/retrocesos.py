@@ -36,19 +36,19 @@ layout = html.Div([
         ]),
         dbc.Row([
             dbc.Col([
-                html.H4('Oscilaciones del Perito Moreno'),
+                html.H3('Oscilaciones del Perito Moreno'),
                 html.P(''),
                 html.P(''),
-                html.H5('Periodo promedio: 5 años (no fijo)'),
+                html.H4('Periodo promedio: 5 años (no fijo)'),
                 html.P(''),
                 html.P(''),
-                html.H5('Rango máximo de oscilación: 150 metros'),
+                html.H4('Rango máximo de oscilación: 150 metros'),
                 html.P(''),
                 html.P(''),
-                html.H5('Deshielo en 60 años: 1000 km2'),  
+                html.H4('Deshielo en 60 años: 1000 km2'),  
                 html.P(''),
                 html.P(''),
-                html.H5('Causa principal: calentamiento global a causa de gases de efecto invernadero')
+                html.H4('Causa principal: calentamiento global a causa de gases de efecto invernadero')
                 ], width=4
             ),
             dbc.Col(
