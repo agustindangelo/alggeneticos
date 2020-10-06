@@ -96,25 +96,13 @@ def ejecutar_paso_cuadrado(superficie, paso, variabilidad):
 
 
 def generar_terreno(tamaño=(1, 1), altura_min=0.5, altura_max=1, variabilidad=0.5, semilla=0):
-    '''Ejecuta el algoritmo. Retorna una matriz cuyo tamaño es el especificado por parámetro y
-    la cual se corresponde con la superficie resultante. Cada elemento x_ij de esta matriz representa
-    la altura del punto ij.
-
-    Para generar la superficie, se requiere una matriz n x n donde n = 2**x + 1, donde x es un entero
-    mayor o igual a 2. Sin embargo, el tamaño solicitado por parámetro puede no cumplir esta condición, por
-    lo tanto  utilizamos internamente el mayor n más proximo que satisfaga dicha condición. 
-    
-    Por simpleza se trabaja internamente con alturas entre 0 y 1, antes de retornar la superficie
-    se reescala a la altura solicitada por parámetro y en caso de ser necesario se recorta al tamaño solicitado.
-    '''
     tamaño_interno, iteraciones = calcular_tamaño_interno_iteraciones(tamaño)
     
     # inicializar el arreglo de floats, los llenamos de "-1"
     superficie = np.full(tamaño_interno, -1, dtype='float')
 
-    # seteamos la semilla para que al ejecutarlo varias veces nos dé el mismo resultado
     np.random.seed(semilla)
-
+    
     # paso 1: inicializar las esquinas
     superficie[0, 0] = np.random.uniform()
     superficie[tamaño_interno[0] - 1, 0] = np.random.uniform()
