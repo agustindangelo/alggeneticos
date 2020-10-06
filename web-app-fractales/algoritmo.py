@@ -123,8 +123,7 @@ def generar_terreno(tamaño=(1, 1), altura_min=0.5, altura_max=1, variabilidad=0
 
     # paso 2: construir iterativamente la superficie
     for i in range(iteraciones):
-        # r = np.power(variabilidad, i)  # Disminuimos la
-        r = variabilidad
+        r = np.power(variabilidad, i)  
         paso = int(np.floor((tamaño_interno[0] - 1) / 2**i))
 
         ejecutar_paso_diamante(superficie, paso, r)
