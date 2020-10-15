@@ -48,9 +48,42 @@ def main_heuristicoA(tabla_distancias, nro_ciudad):
             tabla_auxiliar = tabla_distancias[id_capital_sig].copy() # reinicio la tabla auxiliar para que tenga todas las filas
     
     recorrido.append(nro_ciudad) #vuelvo a la ciudad de inicio
+    distancia_recorrida += tabla_distancias[recorrido[-1]][recorrido[-2]] # sumo la distancia de vuelta a casa
     tf = time.perf_counter()
     tiempo_ejecucion = tf - t0
     return recorrido, distancia_recorrida, tiempo_ejecucion
+
+def main_heuristicoB(tabla_distancias):
+    t0 = time.perf_counter()
+    menor_distancia = 99999999999
+
+    for i in range(len(tabla_distancias)):
+        recorrido_actual = []
+        recorrido_actual.append(i)
+        distancia_recorrida = 0
+        tabla_auxiliar = tabla_distancias[i].copy() #inicializar tabla auxiliar
+
+        while len(recorrido_actual) < len(tabla_distancias):  # len(tabla_distancias) -> 24
+            distancia_mas_cercana = tabla_auxiliar.min()
+            id_capital_sig = tabla_auxiliar.idxmin()
+            
+            if id_capital_sig in recorrido_actual:  # si verdadero, esa capital ya se visitó y por lo tanto se elimina de tabla auxiliar
+                tabla_auxiliar = tabla_auxiliar.drop(id_capital_sig) 
+            else:
+                distancia_recorrida += distancia_mas_cercana  
+                recorrido_actual.append(id_capital_sig)
+                tabla_auxiliar = tabla_distancias[id_capital_sig].copy() # reinicio la tabla auxiliar para que tenga todas las filas
+        
+        recorrido_actual.append(i) #vuelvo a la ciudad de inicio
+        distancia_recorrida += tabla_distancias[recorrido_actual[-1]][recorrido_actual[-2]] # sumo la distancia de vuelta a casa
+
+        if distancia_recorrida < menor_distancia:
+            menor_distancia = distancia_recorrida
+            menor_recorrido = recorrido_actual
+
+    tf = time.perf_counter()
+    tiempo_ejecucion = tf - t0
+    return menor_recorrido, menor_distancia, tiempo_ejecucion
 
 def generar_recorridos_posibles(cantidad_ciudades):
     '''
