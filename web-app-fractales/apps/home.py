@@ -128,9 +128,9 @@ layout = html.Div([
                 #     )
                 # ])
                 dbc.Jumbotron([
-                    html.H3('Algoritmos Genéticos, Ciclo Lectivo 2020', className='display-4'),
+                    html.H4('Universidad Tecnológica Nacional, Facultad Regional Rosario', className='display-3', style={'font-size': 35}),
+                    html.H5('Algoritmos Genéticos, Ciclo Lectivo 2020', className='display-3', style={'font-size': 30}),
                     html.P(descripcion, style={'font-size': '20px'})
-                    
                 ])
             )
         ])
