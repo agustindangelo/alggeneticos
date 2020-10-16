@@ -25,9 +25,10 @@ layout = html.Div([
             dbc.Col(
                 dcc.Checklist(
                     options=[
-                        {'label': 'Mantener trazos anteriores', 'value': 'True'}
+                        {'label': 'Mantener trazos anteriores', 'value': 'trazos'}
                     ],
                     id='input_trazos',
+                    value=['trazos'],
                     labelStyle={'font-size': 20},
                     inputStyle={'size': 10, 'margin': 10}
                 ), width=6  
