@@ -321,14 +321,17 @@ def main_genetico(distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño
     for i in range(ciclos):
         print(f'ciclo {i}')
         poblacion_nueva = []
-
-        for j in range(cantidad_selecciones + 1):
+        if elitismo:
+            padre_1, padre_2 = seleccionar(poblacion_actual, distancias, elitismo)
+            poblacion_nueva.append(padre_1)
+            poblacion_nueva.append(padre_2)
+        for j in range(cantidad_selecciones+1):
          
             if len(poblacion_nueva) == tamaño_poblacion:
                 continue
                 
             # SELECCIONAR
-            padre_1, padre_2 = seleccionar(poblacion_actual, distancias, elitismo)
+            padre_1, padre_2 = seleccionar(poblacion_actual, distancias, False)
             
             # CRUZAR
             if np.random.rand() <= p_crossover:
