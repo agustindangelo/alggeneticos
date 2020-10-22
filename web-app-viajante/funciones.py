@@ -101,14 +101,14 @@ def generar_recorridos_posibles(cantidad_ciudades):
         recorridos_posibles.append(recorrido_aux)
     return recorridos_posibles
 
-def calcular_distancia(tabla_distancias, recorrido):
+def funcion_objetivo(tabla_distancias, recorrido):
     '''
     dado un recorrido [ciudad 1, ciudad 2,  .., ciudad n, ciudad 1], calcula la longitud del trayecto
     '''
     distancia_recorrida = 0
     for i in range(len(recorrido) - 1):
         distancia_actual = tabla_distancias[recorrido[i]][recorrido[i+1]]
-        distancia_recorrida = distancia_recorrida + distancia_actual
+        distancia_recorrida += distancia_actual
     return distancia_recorrida
 
 def main_exhaustivo(tabla_distancias, cantidad_ciudades):
@@ -226,31 +226,23 @@ def mutacion(cromosoma):
     aux.append(cromosoma[0]) # vuelvo a agregar la vuelta a casa
     return aux
 
-def func_objetivo_v2(poblacion, distancias):
-    f_objetivo=0
-    #sumatoria de todas las distancias de todas las poblaciones
-    for cromosoma in poblacion:
-        f_objetivo = f_objetivo + calcular_distancia(distancias, cromosoma)
-    return f_objetivo
-
-def fitness_v2(poblacion, cromosoma, f_obj, tabla_distancias):
-    recorrido = calcular_distancia(tabla_distancias, cromosoma)
-    suma_complemento = 0
+def fitness_v2(tabla_distancias, poblacion, cromosoma):
+    objetivo_cromosoma = funcion_objetivo(tabla_distancias, cromosoma)
     
+    suma_objetivo = 0
     for r in poblacion:
-        suma_complemento = suma_complemento + (f_obj - calcular_distancia(tabla_distancias, r))
+        suma_objetivo += funcion_objetivo(tabla_distancias, r)
         
-    fitness = (f_obj - recorrido) / suma_complemento
+    suma_complemento = 0
+    for r in poblacion:
+        suma_complemento += suma_objetivo - funcion_objetivo(tabla_distancias, r)
+        
+    fitness = (suma_objetivo - objetivo_cromosoma) / suma_complemento
     return fitness
 
-def seleccionar(poblacion, distancias, elitismo=False):
-    lista_poblacion = []
+def seleccionar(lista_poblacion, distancias, elitismo = False):
     id_seleccionado = 0
     padres = []
-    fobj = func_objetivo_v2(poblacion, distancias)
-    for id, individuo in enumerate(poblacion):
-        lista_poblacion.append([id, individuo, fitness_v2(poblacion, individuo, fobj, distancias)])
-    lista_poblacion = sorted(lista_poblacion, key=itemgetter(2), reverse=True)
 
     if elitismo:
         padres.append(lista_poblacion[0][1]) #los dos individuos elitistas
@@ -283,16 +275,16 @@ def seleccionar(poblacion, distancias, elitismo=False):
                 padres.append(cromosoma_elegido)
                 
     return padres[0], padres[1]
-
+    
 def generar_estadisticos(poblaciones, tabla_distancias):
     '''Genera la tabla, cada fila es una población'''
-    resultados = [[],[],[],[],[]] # valor_fobjetivo, recorrido minimo, recorrido maximo, mediana recorridos, mejor cromosoma
+    resultados = [[],[],[],[],[]] # suma de objetivos en poblacion, recorrido minimo, recorrido maximo, mediana recorridos, mejor cromosoma
     
     for poblacion in poblaciones:
         recorridos = []
         menor_recorrido = 999999999
         for cromosoma in poblacion:
-            recorrido = calcular_distancia(tabla_distancias, cromosoma)
+            recorrido = funcion_objetivo(tabla_distancias, cromosoma)
             recorridos.append((cromosoma, recorrido))   
             
             if recorrido < menor_recorrido:
@@ -307,32 +299,37 @@ def generar_estadisticos(poblaciones, tabla_distancias):
         resultados[4].append(mejor_cromosoma)
         
     df = pd.DataFrame(resultados).transpose()
-    df.columns = ['Función Objetivo Poblacion', 'Distancia mínima', 'Distancia máxima', 'Mediana de distancias', 'Mejor cromosoma']
+    df.columns = ['Suma Recorridos Población', 'Recorrido Mínimo', 'Recorrido Máximo', 'Mediana de Recorridos', 'Mejor cromosoma']
     return df
 
-def main_genetico(distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=24, elitismo=True):
+def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=24, elitismo=True):
     t0 = time.perf_counter()
-    
     poblacion_actual = inicializar(tamaño_poblacion, longitud_cromosoma)
     poblaciones = []
     poblaciones.append(poblacion_actual)
     cantidad_selecciones = tamaño_poblacion // 2
 
-    for i in range(ciclos):
-        print(f'ciclo {i}')
+    for i in range(ciclos):  
+        print(f'ciclo actual: {i}')
+        lista_poblacion = []
+        for id, individuo in enumerate(poblacion_actual):
+            lista_poblacion.append([id, individuo, fitness_v2(tabla_distancias,poblacion_actual, individuo)])
+        lista_poblacion = sorted(lista_poblacion, key=itemgetter(2), reverse=True)
+
         poblacion_nueva = []
         if elitismo:
-            padre_1, padre_2 = seleccionar(poblacion_actual, distancias, elitismo)
+            padre_1, padre_2 = seleccionar(lista_poblacion, tabla_distancias, elitismo)           
             poblacion_nueva.append(padre_1)
             poblacion_nueva.append(padre_2)
+        
         for j in range(cantidad_selecciones+1):
          
             if len(poblacion_nueva) == tamaño_poblacion:
                 continue
                 
             # SELECCIONAR
-            padre_1, padre_2 = seleccionar(poblacion_actual, distancias, False)
-            
+            padre_1, padre_2 = seleccionar(lista_poblacion, tabla_distancias, False)
+
             # CRUZAR
             if np.random.rand() <= p_crossover:
                 hijo_1, hijo_2 = crossover_ciclico(padre_1[:-1], padre_2[:-1])
@@ -360,8 +357,8 @@ def main_genetico(distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño
     tf = time.perf_counter()
     
     poblaciones_df = pd.DataFrame(poblaciones)
-    resultados = generar_estadisticos(poblaciones, distancias)
+    resultados = generar_estadisticos(poblaciones, tabla_distancias)
 #    generar_graficos(resultados)
     tiempo_ejecucion = tf - t0
     
-    return resultados.iloc[-1,:], tiempo_ejecucion
+    return resultados.iloc[-1, :], tiempo_ejecucion

@@ -112,7 +112,6 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
     if clicks is None:
         return go.Figure()
     else:
-        
         tabla_distancias, tabla_capitales = importar_tablas()
         resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 24, elitismo=elitismo)
         cap = formatear(tabla_capitales, resultados['Mejor cromosoma'])
@@ -148,7 +147,7 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
                 hoverinfo='text'
             ),
             layout=go.Layout(        
-                title_text=f'Distancia Mínima:{resultados["Distancia mínima"]:8.0f} km    |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
+                title_text=f'Recorrido Mínimo:{resultados["Recorrido Mínimo"]:8.0f} km    |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
                 hovermode="closest",
                 font={'size': 18}
             ),
