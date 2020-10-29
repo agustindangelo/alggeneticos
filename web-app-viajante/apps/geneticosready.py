@@ -69,7 +69,7 @@ def load_output(clicks):
         return go.Figure()
     else:
         tabla_distancias, tabla_capitales = importar_tablas()
-        mejor_cromosoma = [14, 15, 19, 4, 20, 18, 17, 1, 21, 13, 16, 5, 3, 2, 11, 9, 8, 23, 10, 22, 12, 7, 6, 14]
+        mejor_cromosoma = [19, 15, 16, 1, 18, 6, 5, 14, 13, 21, 9, 3, 17, 20, 7, 23, 22, 12, 10, 4, 8, 11, 2, 19] 
         cap = formatear(tabla_capitales, mejor_cromosoma)
 
         # --------------------------- dibujado del mapa
