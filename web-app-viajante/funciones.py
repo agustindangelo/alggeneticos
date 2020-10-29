@@ -118,7 +118,7 @@ def main_exhaustivo(tabla_distancias, cantidad_ciudades):
     recorridos_posibles = generar_recorridos_posibles(cantidad_ciudades)
 
     for recorrido in recorridos_posibles:
-        distancia_recorrida = calcular_distancia(tabla_distancias, recorrido)
+        distancia_recorrida = funcion_objetivo(tabla_distancias, recorrido)
         if distancia_recorrida < distancia_minima:
             distancia_minima = distancia_recorrida
             recorrido_minimo = recorrido

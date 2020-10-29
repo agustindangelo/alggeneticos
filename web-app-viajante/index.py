@@ -3,7 +3,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 
 from app import app
-from apps import home, exhaustivo, heuristicoA, heuristicoB, geneticos
+from apps import home, exhaustivo, heuristicoA, heuristicoB, geneticos, geneticosready
 from dash.dependencies import Input, Output
 
 dropdown = dbc.DropdownMenu(
@@ -13,6 +13,7 @@ dropdown = dbc.DropdownMenu(
         dbc.DropdownMenuItem("Enfoque Heurístico con Restricción", href="/heuristicoA", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Enfoque Heurístico", href="/heuristicoB", style={'font-size': '24px'}),
         dbc.DropdownMenuItem("Algoritmo Genético", href="/geneticos", style={'font-size': '24px'}),
+        dbc.DropdownMenuItem("Final Algoritmo Genético", href="/geneticos-ready", style={'font-size': '24px'})
     ],
     nav = True,
     in_navbar = True,
@@ -68,6 +69,8 @@ def display_page(pathname):
         return heuristicoB.layout
     elif pathname == '/geneticos':
         return geneticos.layout
+    elif pathname == '/geneticos-ready':
+        return geneticosready.layout
     else:
         return home.layout
 
