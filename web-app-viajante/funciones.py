@@ -189,11 +189,11 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
     poblacion_inicial = []
     for i in range(tamaño_poblacion):
         num = []
-        num.append(np.random.randint(1,24))
+        num.append(np.random.randint(0,24))
         for i in range(1, longitud_cromosoma-1):
             band=True
             while(band==True):
-                prov=np.random.randint(1,24)              
+                prov=np.random.randint(0,24)
                 repetido=0
                 for j in (num):
                     if prov==j:
@@ -203,7 +203,7 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
                     band=False
         num.append(num[0])
         poblacion_inicial.append(num)
-    
+
     return poblacion_inicial
 
 def mutacion(cromosoma):
@@ -302,7 +302,7 @@ def generar_estadisticos(poblaciones, tabla_distancias):
     df.columns = ['Suma Recorridos Población', 'Recorrido Mínimo', 'Recorrido Máximo', 'Mediana de Recorridos', 'Mejor cromosoma']
     return df
 
-def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=24, elitismo=True):
+def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=25, elitismo=True):
     t0 = time.perf_counter()
     poblacion_actual = inicializar(tamaño_poblacion, longitud_cromosoma)
     poblaciones = []

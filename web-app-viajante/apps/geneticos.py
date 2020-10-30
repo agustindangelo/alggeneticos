@@ -113,7 +113,7 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
         return go.Figure()
     else:
         tabla_distancias, tabla_capitales = importar_tablas()
-        resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 24, elitismo=elitismo)
+        resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 25, elitismo=elitismo)
         cap = formatear(tabla_capitales, resultados['Mejor cromosoma'])
 
         # --------------------------- dibujado del mapa
@@ -136,7 +136,7 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
                             lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], 
                             lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']],
                             marker={'size': 8, 'color': 'red'},
-                            line={'color': 'blue', 'width':2})
+                            line={'color': 'blue', 'width':3})
                     ], name=f'frame{k}'))
         # dibujo la figura, y le asigno los cuadros
         fig = go.Figure(
