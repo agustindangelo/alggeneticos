@@ -189,7 +189,7 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
     poblacion_inicial = []
     for i in range(tamaño_poblacion):
         num = []
-        num.append(np.random.randint(1,24))
+        num.append(np.random.randint(0,24))
         for i in range(1, longitud_cromosoma-1):
             band=True
             while(band==True):
@@ -207,15 +207,15 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
     return poblacion_inicial
 
 def mutacion(cromosoma):
+    # se aplica una swap mutation.
     aux = cromosoma[:-1]  # aux es el cromosoma pero sin la vuelta a casa
     
-    provA = np.random.randint(1, len(aux)-1)
-    provB = np.random.randint(1, len(aux)-1)
-    #no se si haria falta validar que no toque la misma provincia a permutar
+    provA = np.random.randint(0, len(aux)-1)
+    provB = np.random.randint(0, len(aux)-1)
     band=False
     while (band==False):
         if provA==provB:
-            provB = np.random.randint(1, len(aux)-1)
+            provB = np.random.randint(0, len(aux)-1)
         else:
             band=True
     A=aux[provA]
@@ -223,7 +223,7 @@ def mutacion(cromosoma):
     aux[provA]=B
     aux[provB]=A
     
-    aux.append(cromosoma[0]) # vuelvo a agregar la vuelta a casa
+    aux.append(aux[0]) # vuelvo a agregar la vuelta a casa
     return aux
 
 def fitness_v2(tabla_distancias, poblacion, cromosoma):
