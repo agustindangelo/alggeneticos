@@ -118,7 +118,7 @@ def main_exhaustivo(tabla_distancias, cantidad_ciudades):
     recorridos_posibles = generar_recorridos_posibles(cantidad_ciudades)
 
     for recorrido in recorridos_posibles:
-        distancia_recorrida = calcular_distancia(tabla_distancias, recorrido)
+        distancia_recorrida = funcion_objetivo(tabla_distancias, recorrido)
         if distancia_recorrida < distancia_minima:
             distancia_minima = distancia_recorrida
             recorrido_minimo = recorrido
@@ -193,7 +193,7 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
         for i in range(1, longitud_cromosoma-1):
             band=True
             while(band==True):
-                prov=np.random.randint(1,24)              
+                prov=np.random.randint(0,24)
                 repetido=0
                 for j in (num):
                     if prov==j:
@@ -203,7 +203,7 @@ def inicializar(tamaño_poblacion, longitud_cromosoma):
                     band=False
         num.append(num[0])
         poblacion_inicial.append(num)
-    
+
     return poblacion_inicial
 
 def mutacion(cromosoma):
@@ -302,7 +302,7 @@ def generar_estadisticos(poblaciones, tabla_distancias):
     df.columns = ['Suma Recorridos Población', 'Recorrido Mínimo', 'Recorrido Máximo', 'Mediana de Recorridos', 'Mejor cromosoma']
     return df
 
-def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=24, elitismo=True):
+def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=25, elitismo=True):
     t0 = time.perf_counter()
     poblacion_actual = inicializar(tamaño_poblacion, longitud_cromosoma)
     poblaciones = []

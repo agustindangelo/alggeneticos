@@ -15,48 +15,10 @@ layout = html.Div([
         dbc.Row([
             dbc.Col(
                 dbc.Card(
-                    html.H4(children='RESOLUCIÓN MEDIANTE ALGORITMO GENÉTICO',
+                    html.H4(children='RESOLUCIÓN FINAL CON ALG. GENÉTICOS',
                             className="text-center text-light bg-dark"),
                     body=True, color="dark")
                 , className="mb-4")
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div([
-                    html.H5("Tamaño Población"),
-                    dbc.Input(type="number", min=5, max=100, value=50, id="input_tamaño_poblacion"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=3
-            ),
-            dbc.Col(
-                html.Div([
-                    html.H5("Probabilidad de Mutación"),
-                    dbc.Input(type="text", min=0, max=1, value=0.2, id="input_prob_mutacion"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=3
-            ),
-            dbc.Col(
-                html.Div([
-                    html.H5("Probabilidad de Cruce"),
-                    dbc.Input(type="text", min=0, max=1, value=0.9, id="input_prob_crossover"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=3
-            ),
-            dbc.Col(
-                html.Div([
-                    html.H5("Cantidad de Ciclos"),
-                    dbc.Input(type="number", min=3, max=200, value=3, id="input_ciclos"),
-                ],
-                id="styled-numeric-input",
-                ),
-                width=3
-            ),
         ]),
         html.Hr(),
         dbc.Row([
@@ -90,7 +52,7 @@ layout = html.Div([
             dbc.Col([
                 html.Hr(),
                 dbc.Spinner([
-                        dcc.Graph(id="mapa_genetico")
+                        dcc.Graph(id="mapa_genetico_ready")
                     ], size="lg", color="primary", type="grow", fullscreen=True, spinner_style={"width": "10rem", "height": "10rem"}),
             ])
         ]),
@@ -99,45 +61,29 @@ layout = html.Div([
 ])
 
 @app.callback(
-    Output("mapa_genetico", "figure"),
-    [Input('ejecutar', 'n_clicks'), 
-    Input('input_trazos', 'value'),
-    Input('input_elitismo', 'value'),
-    Input('input_ciclos', 'value'),
-    Input('input_prob_crossover', 'value'),
-    Input('input_prob_mutacion', 'value'),
-    Input('input_tamaño_poblacion', 'value')]
+    Output("mapa_genetico_ready", "figure"),
+    Input('ejecutar', 'n_clicks')
 )
-def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacion, tamaño_poblacion):
+def load_output(clicks):
     if clicks is None:
         return go.Figure()
     else:
         tabla_distancias, tabla_capitales = importar_tablas()
-        resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 25, elitismo=elitismo)
-        cap = formatear(tabla_capitales, resultados['Mejor cromosoma'])
+        mejor_cromosoma = [5, 21, 15, 14, 16, 3, 2, 11, 9, 0, 4, 8, 19, 1, 23, 20, 10, 22, 12, 7, 18, 6, 13, 17, 5]
+        cap = formatear(tabla_capitales, mejor_cromosoma)
 
         # --------------------------- dibujado del mapa
         frames = []
-        if mantener_trazo:
-            for k in range(len(cap)):
-                frames.append(go.Frame(data=[
-                    go.Scattermapbox(
-                        mode='markers+lines', 
-                        lat=cap['latitud'][:k+1],  
-                        lon=cap['longitud'][:k+1],
-                        marker={'size': 8, 'color': 'red'},
-                        line={'color': 'blue', 'width':2})
-                    ], name=f'frame{k}'))
-        else:
-            for k in range(len(cap)-1):
-                frames.append(go.Frame(data=[
-                        go.Scattermapbox(
-                            mode='markers+lines', 
-                            lat=[cap.iloc[k]['latitud'], cap.iloc[k+1]['latitud']], 
-                            lon=[cap.iloc[k]['longitud'], cap.iloc[k+1]['longitud']],
-                            marker={'size': 8, 'color': 'red'},
-                            line={'color': 'blue', 'width':3})
-                    ], name=f'frame{k}'))
+        for k in range(len(cap)):
+            frames.append(go.Frame(data=[
+                go.Scattermapbox(
+                    mode='markers+lines', 
+                    lat=cap['latitud'][:k+1],  
+                    lon=cap['longitud'][:k+1],
+                    marker={'size': 8, 'color': 'red'},
+                    line={'color': 'blue', 'width':2})
+                ], name=f'frame{k}'))
+     
         # dibujo la figura, y le asigno los cuadros
         fig = go.Figure(
             data=go.Scattermapbox(
@@ -147,7 +93,7 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
                 hoverinfo='text'
             ),
             layout=go.Layout(        
-                title_text=f'Recorrido Mínimo:{resultados["Recorrido Mínimo"]:8.0f} km    |   Tiempo Ejecución: {tiempo_ejecucion:5.5f} s', 
+                title_text=f'Recorrido Mínimo: 12817 km    |   Tiempo Ejecución: 84.782 segundos', 
                 hovermode="closest",
                 font={'size': 18}
             ),
