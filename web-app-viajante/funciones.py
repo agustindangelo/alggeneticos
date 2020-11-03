@@ -226,7 +226,7 @@ def mutacion(cromosoma):
     aux.append(aux[0]) # vuelvo a agregar la vuelta a casa
     return aux
 
-def fitness_v2(tabla_distancias, poblacion, cromosoma):
+def fitness_v2(tabla_distancias,poblacion, cromosoma):
     objetivo_cromosoma = funcion_objetivo(tabla_distancias, cromosoma)
     
     suma_objetivo = 0
@@ -249,7 +249,6 @@ def seleccionar(lista_poblacion, distancias, elitismo = False):
         padres.append(lista_poblacion[1][1])
     else:
         # RULETA 
-        
         while len(padres) < 2:  # porque necesitamos dos padres
             num_aleatorio = np.random.rand()    
             fitness_acumulada = lista_poblacion[0][2]
@@ -275,7 +274,7 @@ def seleccionar(lista_poblacion, distancias, elitismo = False):
                 padres.append(cromosoma_elegido)
                 
     return padres[0], padres[1]
-    
+
 def generar_estadisticos(poblaciones, tabla_distancias):
     '''Genera la tabla, cada fila es una población'''
     resultados = [[],[],[],[],[]] # suma de objetivos en poblacion, recorrido minimo, recorrido maximo, mediana recorridos, mejor cromosoma
@@ -300,10 +299,11 @@ def generar_estadisticos(poblaciones, tabla_distancias):
         
     df = pd.DataFrame(resultados).transpose()
     df.columns = ['Suma Recorridos Población', 'Recorrido Mínimo', 'Recorrido Máximo', 'Mediana de Recorridos', 'Mejor cromosoma']
-    return df
+    return df  
 
-def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, tamaño_poblacion=50, longitud_cromosoma=25, elitismo=True):
+def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=200, tamaño_poblacion=50, longitud_cromosoma=25, elitismo=True):
     t0 = time.perf_counter()
+    
     poblacion_actual = inicializar(tamaño_poblacion, longitud_cromosoma)
     poblaciones = []
     poblaciones.append(poblacion_actual)
@@ -313,7 +313,7 @@ def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, t
         print(f'ciclo actual: {i}')
         lista_poblacion = []
         for id, individuo in enumerate(poblacion_actual):
-            lista_poblacion.append([id, individuo, fitness_v2(tabla_distancias,poblacion_actual, individuo)])
+            lista_poblacion.append([id, individuo, fitness_v2(tabla_distancias, poblacion_actual, individuo)])
         lista_poblacion = sorted(lista_poblacion, key=itemgetter(2), reverse=True)
 
         poblacion_nueva = []
@@ -356,9 +356,7 @@ def main_genetico(tabla_distancias, p_crossover=0.9, p_mutacion=0.2, ciclos=3, t
         poblaciones.append(poblacion_nueva)
     tf = time.perf_counter()
     
-    poblaciones_df = pd.DataFrame(poblaciones)
     resultados = generar_estadisticos(poblaciones, tabla_distancias)
-#    generar_graficos(resultados)
     tiempo_ejecucion = tf - t0
     
-    return resultados.iloc[-1, :], tiempo_ejecucion
+    return resultados.iloc[-1,:], tiempo_ejecucion
