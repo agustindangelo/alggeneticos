@@ -210,12 +210,12 @@ def mutacion(cromosoma):
     # se aplica una swap mutation.
     aux = cromosoma[:-1]  # aux es el cromosoma pero sin la vuelta a casa
     
-    provA = np.random.randint(0, len(aux)-1)
-    provB = np.random.randint(0, len(aux)-1)
+    provA = np.random.randint(0, len(cromosoma)-1)
+    provB = np.random.randint(0, len(cromosoma)-1)
     band=False
     while (band==False):
         if provA==provB:
-            provB = np.random.randint(0, len(aux)-1)
+            provB = np.random.randint(0, len(cromosoma)-1)
         else:
             band=True
     A=aux[provA]

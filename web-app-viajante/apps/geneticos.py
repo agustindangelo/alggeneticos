@@ -113,7 +113,7 @@ def load_output(clicks, mantener_trazo, elitismo, ciclos, p_crossover, p_mutacio
         return go.Figure()
     else:
         tabla_distancias, tabla_capitales = importar_tablas()
-        resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 25, elitismo=elitismo)
+        resultados, tiempo_ejecucion = main_genetico(tabla_distancias, p_crossover, p_mutacion, ciclos, tamaño_poblacion, 24, elitismo=elitismo)
         cap = formatear(tabla_capitales, resultados['Mejor cromosoma'])
 
         # --------------------------- dibujado del mapa
